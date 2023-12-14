@@ -1,0 +1,27 @@
+.main-panel {
+    display: flex;
+    align-items: center;
+  }
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px 15px;
+
+    form {
+      display: flex;
+      gap: 10px;
+      div {
+        flex: 1
+      }
+    }
+
+    .input-search {
+      display: flex;
+      cursor: pointer;
+    }
+}
+
+.mat-mdc-form-field {
+    width: 100%;
+}

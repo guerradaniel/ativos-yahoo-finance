@@ -1,0 +1,17 @@
+.toolbar {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(to right, #ffffff, #48009B);
+    color: #48009B;
+    font-weight: 900;
+}
+
+.toolbar img {
+    height: 150px;
+    margin: 0 30px;
+}

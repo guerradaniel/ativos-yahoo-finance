@@ -1,0 +1,29 @@
+<div class="container">
+
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <div>
+      <mat-form-field appearance="fill">
+        <mat-label>Ativos</mat-label>
+        <div class="input-search">
+          <input type="text" placeholder="Selecione" aria-label="Ativos" matInput formControlName="assetControl"
+            [matAutocomplete]="auto" />
+          <span>
+            <mat-icon color="primary">close</mat-icon>
+          </span>
+        </div>
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSubmit()">
+          <mat-option>
+            Teste 
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    <button mat-fab color="primary" type="submit">
+      <mat-icon>search</mat-icon>
+    </button>
+  </form>
+
+
+  <app-table-variation></app-table-variation>
+
+</div>
