@@ -12,8 +12,8 @@
           </span>
         </div>
         <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSubmit()">
-          <mat-option>
-            Teste 
+          <mat-option *ngFor="let option of assetGroupOptions$ | async" [value]="option.id">
+            {{option.id}} - {{option.name}} 
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>

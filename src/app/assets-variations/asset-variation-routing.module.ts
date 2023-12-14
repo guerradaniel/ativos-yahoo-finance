@@ -6,7 +6,11 @@ const routes: Routes = [
     {
         path: '',
         component: AssetVariationComponent
-    }
+    },
+    {
+        path: ':code',
+        component: AssetVariationComponent,
+      },
 ];
 
 @NgModule({

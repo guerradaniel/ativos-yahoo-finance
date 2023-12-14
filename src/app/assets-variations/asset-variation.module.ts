@@ -14,8 +14,8 @@ import { AppMaterialModule } from '../shared/app-material/app-material.module';
   ],
   imports: [
     CommonModule,
-    AssetVariationRoutingModule,
     AppMaterialModule,
+    AssetVariationRoutingModule,
     ReactiveFormsModule
   ]
 })

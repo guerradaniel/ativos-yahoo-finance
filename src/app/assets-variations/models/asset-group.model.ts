@@ -1,4 +1,4 @@
 export interface AssetGroup {
-    symbol: string;
+    id: string;
     name: string;
 }
