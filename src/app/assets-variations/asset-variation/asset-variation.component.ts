@@ -5,6 +5,9 @@ import { Observable, debounceTime, map, startWith } from 'rxjs';
 import { Asset } from '../models/asset.model';
 import { AssetGroup } from '../models/asset-group.model';
 import { AssetsService } from '../assets.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PeriodDate } from '../models/period.model';
+import { addDays, fromUnixTime } from 'date-fns';
 
 
 @Component({
@@ -12,31 +15,37 @@ import { AssetsService } from '../assets.service';
   templateUrl: './asset-variation.component.html',
   styleUrls: ['./asset-variation.component.scss']
 })
-export class AssetVariationComponent implements OnInit{
+export class AssetVariationComponent implements OnInit {
 
   public asset: Asset[] = [];
   public assetsGroupOptions$!: Observable<AssetGroup[]>;
   public formGroup!: FormGroup;
   public assetGroupOptions$!: Observable<AssetGroup[]>;
   public assetOptions: AssetGroup[] = [];
+  public assetSelected = '';
+  public period: PeriodDate;
 
   constructor(
+    private route: ActivatedRoute,
     private formBuilder: FormBuilder,
-    private assetsService: AssetsService
-    ) {}
-
-  ngOnInit(): void {
+    private assetsService: AssetsService,
+    private router: Router
+  ) {
     this.createForm();
+
+    const date = new Date();
+
+    this.period = {
+      start: addDays(date, -7),
+      end: addDays(date, -1),
+    };
+
     this.getOptions();
   }
 
-  public displayedColumns = [
-    'dayNumber',
-    'date',
-    'monetaryValue',
-    'percentagePreviousDay',
-    'percentageFirstDay',
-  ];
+  ngOnInit(): void {
+
+  }
 
   createForm(): void {
     this.formGroup = this.formBuilder.group({
@@ -46,15 +55,25 @@ export class AssetVariationComponent implements OnInit{
 
   getOptions(): void {
     this.assetsService.getAssetsOptions()
-    .subscribe((value) => (this.assetOptions = value));
+      .subscribe((value) => (this.assetOptions = value));
 
     this.assetGroupOptions$ = this.formGroup
-    .get('assetControl')!
-    .valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      map((value) => this._filter(value || ''))
-    );
+      .get('assetControl')!
+      .valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        map((value) => this._filter(value || ''))
+      );
+
+    this.route.params.subscribe((params) => {
+      const code = params['code'];
+      if (code) {
+        this.formGroup.get('assetControl')?.setValue(code);
+      } else {
+        this.formGroup.get('assetControl')?.setValue('PETR4');
+      }
+      this.onSubmit();
+    });
   }
 
   private _filter(value: string): AssetGroup[] {
@@ -67,6 +86,63 @@ export class AssetVariationComponent implements OnInit{
     );
   }
 
-  onSubmit() { }
+  onSubmit(): void {
+    const id = this.formGroup.get('assetControl')!.value;
+    this.router.navigate([`/${id}`]), { replaceUrl: true };
+
+    this.getAsset(this.formGroup.get('assetControl')!.value || '');
+  }
+
+  private getAsset(value: string): void {
+    this.assetSelected = value;
+    this.asset = [];
+
+    this.assetsService.getAssetsByPeriod(value, this.period.start, this.period.end)
+      .subscribe({
+        next: (data) => {
+          this.asset = this.serializer(
+            data.indicators.quote[0].open,
+            data.timestamp
+          )
+        }
+      })
+  }
+
+  private serializer(values: number[], timestamp: number[]): Asset[] {
+    const data = values.map((value, index) => {
+      const asset: Asset = {
+        dayNumber: index + 1,
+        monetaryValue: value,
+        date: fromUnixTime(timestamp[index])
+      }
+
+      if (index) {
+        asset.percentagePreviousDay = this.percentageChange(
+          values[index - 1],
+          values[index]
+        );
+
+        asset.percentageFirstDay = this.percentageChange(
+          values[0],
+          values[index]
+        )
+      }
+
+      return asset;
+    })
+
+    return data;
+  }
+
+  private percentageChange(
+    valuePrevious: number,
+    valuePosterior: number
+  ): number {
+    return ((valuePrevious - valuePosterior) / valuePosterior) * -1;
+  }
+
+  clearSearch() {
+    this.formGroup.get('assetControl')?.patchValue('');
+  }
 
 }

@@ -1,0 +1,11 @@
+{
+    "/yahoo/*": {
+      "target": "https://query2.finance.yahoo.com",
+      "secure": false,
+      "changeOrigin": true,
+      "pathRewrite": {
+        "^/yahoo": "/v8/finance"
+      }
+    }
+  }
+  

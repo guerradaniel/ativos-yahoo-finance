@@ -8,7 +8,7 @@ import { Asset } from '../models/asset.model';
 })
 export class TableVariationComponent {
 
-  @Input() asset: Asset[] = [];
+  @Input() dataSource: Asset[] = [];
 
   public displayedColumns = [
     'dayNumber',
