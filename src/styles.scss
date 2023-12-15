@@ -8,5 +8,25 @@ $custom-theme: mat-light-theme($custom-app-primary, $custom-app-secondary);
 
 @include angular-material-theme($custom-theme);
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+
+::-webkit-scrollbar {
+    width: 4px;
+    overflow-y: scroll;
+    background: #E2D6EF;
+    box-shadow: inset 0 0 4px #707070;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #511D91;
+    border-radius: 10px;
+}

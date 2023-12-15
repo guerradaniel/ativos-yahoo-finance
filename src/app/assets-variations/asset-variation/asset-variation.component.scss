@@ -1,7 +1,7 @@
 .main-panel {
-    display: flex;
-    align-items: center;
-  }
+  display: flex;
+  align-items: center;
+}
 
 .container {
     max-width: 960px;
@@ -24,4 +24,19 @@
 
 .mat-mdc-form-field {
     width: 100%;
+}
+
+.mat-mdc-table {
+  width: 100%;
+}
+
+.chart {
+  margin-top: 20px;
+}
+
+.period-text{
+  text-align: center;
+  position: relative;
+  bottom: 65px;
+  color: #511D91;
 }

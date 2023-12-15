@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+
 import { Observable, catchError, map, take, throwError } from 'rxjs';
 import { AssetGroup } from './models/asset-group.model';
 import { getUnixTime } from 'date-fns';
@@ -17,21 +18,23 @@ export class AssetsService {
   ) { }
 
   getAssetsByPeriod(
-    id: string, 
-    start: Date, 
-    end: Date, 
+    id: string,
+    start: Date,
+    end: Date,
     interval: string = '1d'): Observable<any> {
     const queryParams = new HttpParams()
-      .set('interval1', interval)
+      .set('interval', interval)
       .set('period1', getUnixTime(start))
       .set('period2', getUnixTime(end));
+      console.log('queryParams', queryParams)
 
-    return this.http.get<any>(`${this.URL_API}/chart/${id}.SA`, { params: queryParams }).pipe(
-      map((data: any) => data.chart.result[0]),
-      catchError(() => throwError(() => new Error(
-        'Erro ao buscar os ativos. Por favor, tente novamente.'
-      )))
-    );
+      return this.http
+      .get(`${this.URL_API}/chart/${id}.SA`, { params: queryParams })
+      .pipe(
+        take(1),
+        map((data: any) => data.chart.result[0]),
+        catchError(() => throwError(() => new Error('Erro ao buscar os dados. Por favor, tente novamente.')))
+      );
   }
 
   getAssetsOptions(): Observable<AssetGroup[]> {

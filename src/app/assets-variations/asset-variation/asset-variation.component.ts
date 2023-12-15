@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable, debounceTime, map, startWith } from 'rxjs';
 
@@ -9,13 +9,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PeriodDate } from '../models/period.model';
 import { addDays, fromUnixTime } from 'date-fns';
 
-
 @Component({
   selector: 'app-asset-variation',
   templateUrl: './asset-variation.component.html',
   styleUrls: ['./asset-variation.component.scss']
 })
-export class AssetVariationComponent implements OnInit {
+export class AssetVariationComponent {
 
   public asset: Asset[] = [];
   public assetsGroupOptions$!: Observable<AssetGroup[]>;
@@ -24,6 +23,15 @@ export class AssetVariationComponent implements OnInit {
   public assetOptions: AssetGroup[] = [];
   public assetSelected = '';
   public period: PeriodDate;
+  public loading = false;
+
+  public displayedColumns = [
+    'dayNumber',
+    'date',
+    'monetaryValue',
+    'percentagePreviousDay',
+    'percentageFirstDay',
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -34,17 +42,12 @@ export class AssetVariationComponent implements OnInit {
     this.createForm();
 
     const date = new Date();
-
     this.period = {
-      start: addDays(date, -7),
-      end: addDays(date, -1),
+      start: addDays(date, -31),
+      end: addDays(date, -1)
     };
 
     this.getOptions();
-  }
-
-  ngOnInit(): void {
-
   }
 
   createForm(): void {
@@ -95,17 +98,23 @@ export class AssetVariationComponent implements OnInit {
 
   private getAsset(value: string): void {
     this.assetSelected = value;
+    this.loading = true;
     this.asset = [];
 
-    this.assetsService.getAssetsByPeriod(value, this.period.start, this.period.end)
+    this.assetsService
+      .getAssetsByPeriod(value, this.period.start, this.period.end)
       .subscribe({
         next: (data) => {
           this.asset = this.serializer(
             data.indicators.quote[0].open,
             data.timestamp
           )
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
         }
-      })
+      });
   }
 
   private serializer(values: number[], timestamp: number[]): Asset[] {
@@ -113,8 +122,8 @@ export class AssetVariationComponent implements OnInit {
       const asset: Asset = {
         dayNumber: index + 1,
         monetaryValue: value,
-        date: fromUnixTime(timestamp[index])
-      }
+        date: fromUnixTime(timestamp[index]),
+      };
 
       if (index) {
         asset.percentagePreviousDay = this.percentageChange(
@@ -127,7 +136,6 @@ export class AssetVariationComponent implements OnInit {
           values[index]
         )
       }
-
       return asset;
     })
 
@@ -136,12 +144,12 @@ export class AssetVariationComponent implements OnInit {
 
   private percentageChange(
     valuePrevious: number,
-    valuePosterior: number
+    valueNext: number
   ): number {
-    return ((valuePrevious - valuePosterior) / valuePosterior) * -1;
+    return ((valuePrevious - valueNext) / valueNext) * -1;
   }
 
-  clearSearch() {
+  clearSearch(): void{
     this.formGroup.get('assetControl')?.patchValue('');
   }
 

@@ -1,28 +1,45 @@
-<div class="container">
+<div class="main-panel">
+  <div class="container">
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label color="secondary">Ativos</mat-label>
+          <div class="input-search">
+            <input type="text" placeholder="Selecione" aria-label="Ativos" matInput formControlName="assetControl"
+              [matAutocomplete]="auto" />
+            <span (click)="clearSearch()">
+              <mat-icon color="primary">close</mat-icon>
+            </span>
+          </div>
+          <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSubmit()">
+            <mat-option *ngFor="let option of assetGroupOptions$ | async" [value]="option.id">
+              {{option.id}} - {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <button mat-fab color="primary" type="submit">
+        <mat-icon>search</mat-icon>
+      </button>
+    </form>
 
-  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-    <div>
-      <mat-form-field appearance="fill">
-        <mat-label color="secondary">Ativos</mat-label>
-        <div class="input-search">
-          <input type="text" placeholder="Selecione" aria-label="Ativos" matInput formControlName="assetControl"
-            [matAutocomplete]="auto" />
-          <span>
-            <mat-icon color="primary">close</mat-icon>
-          </span>
-        </div>
-        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSubmit()">
-          <mat-option *ngFor="let option of assetGroupOptions$ | async" [value]="option.id">
-            {{option.id}} - {{option.name}} 
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+    <app-table-variation [dataSource]="asset"></app-table-variation>
+  </div>
+
+  <div class="container">
+    <h3 class="period-text">
+      Período: {{ period.start | date : "dd/MM/yyyy" }} a
+      {{ period.end | date : "dd/MM/yyyy" }}
+    </h3>
+
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+    <div class="chart" *ngIf="asset.length">
+      <app-chart [data]="asset"></app-chart>
     </div>
-    <button mat-fab color="primary" type="submit">
-      <mat-icon>search</mat-icon>
-    </button>
-  </form>
 
-  <app-table-variation [dataSource]="asset"></app-table-variation>
-
+    <div class="alert warn" *ngIf="!asset.length && !loading">
+      Não foi encontrado dados para o Ativo "{{ assetSelected }}"
+    </div>
+  </div>
 </div>

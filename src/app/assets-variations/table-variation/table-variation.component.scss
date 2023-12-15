@@ -1,4 +1,32 @@
 .table-container {
-    max-height: 600px;
-    overflow: auto;
+  max-height: 600px;
+  overflow: auto;
+}
+
+table {
+  .cdk-header-cell,
+  .cdk-cell {
+    border: 1px solid #ccc;
   }
+  
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .mat-column-dayNumber, .mat-column-date,
+  .mat-column-monetaryValue, .mat-column-percentagePreviousDay,
+  .mat-column-percentageFirstDay {
+    text-align: center;
+  }
+
+  .mat-column-dayNumber {
+    width: 32px;
+  }
+  
+  .mat-column-date {
+    width: 100px;
+  }
+  .mat-column-percentagePreviousDay{
+    width: 100px;
+  }
+}
