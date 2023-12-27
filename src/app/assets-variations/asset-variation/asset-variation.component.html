@@ -23,7 +23,11 @@
       </button>
     </form>
 
-    <app-table-variation [dataSource]="asset"></app-table-variation>
+    <mat-progress-bar *ngIf="loading; else table" mode="indeterminate"></mat-progress-bar>
+
+    <ng-template #table>
+      <app-table-variation [dataSource]="asset"></app-table-variation>
+    </ng-template>
   </div>
 
   <div class="container">
